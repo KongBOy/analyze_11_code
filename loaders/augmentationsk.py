@@ -13,7 +13,7 @@ import random
 
 def tight_crop(im, fm):
     # different tight crop
-    msk=((fm[:,:,0]!=0)&(fm[:,:,1]!=0)&(fm[:,:,2]!=0)).astype(np.uint8)
+    msk = ((fm[:, :, 0] != 0) & (fm[:, :, 1] != 0) & (fm[:, :, 2] != 0)).astype(np.uint8)
     [y, x] = (msk).nonzero()
     minx = min(x)
     maxx = max(x)
@@ -48,7 +48,7 @@ def tight_crop(im, fm):
 
 def tight_crop_d(im, dm):
     # different tight crop
-    msk=(dm!=0).astype(np.uint8)
+    msk = (dm != 0).astype(np.uint8)
     [y, x] = (msk).nonzero()
     minx = min(x)
     maxx = max(x)
@@ -96,14 +96,15 @@ def color_jitter(im, brightness=0, contrast=0, saturation=0, hue=0):
     # im = np.clip(im, 0., 1.)
     return im
 
+
 def change_intensity(img):
-    chance=random.uniform(0,1)
+    chance = random.uniform(0, 1)
     # print(chance)
     nimg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    if chance>0.3:
-        inc=random.randint(15,50)
+    if chance > 0.3:
+        inc = random.randint(15, 50)
         # print(inc)
-        #increase
+        # increase
         v = nimg[:, :, 2]
         v = np.where(v <= 255 - inc, v + inc, 255)
         nimg[:, :, 2] = v
@@ -117,21 +118,21 @@ def change_intensity(img):
 
 
 def change_hue_sat(img):
-    chance=random.uniform(0,1)
+    chance = random.uniform(0, 1)
     # print(chance)
     nimg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    if chance>0.3:
-        inc=random.randint(5,15)
+    if chance > 0.3:
+        inc = random.randint(5, 15)
         # print(inc)
-        #increase
+        # increase
         v = nimg[:, :, 0]
         v = np.where(v <= 255 - inc, v + inc, 255)
         nimg[:, :, 0] = v
 
-    if chance>0.3:
-        inc=random.randint(5,15)
+    if chance > 0.3:
+        inc = random.randint(5, 15)
         # print(inc)
-        #increase
+        # increase
         v = nimg[:, :, 1]
         v = np.where(v <= 255 - inc, v + inc, 255)
         nimg[:, :, 1] = v
@@ -143,33 +144,34 @@ def change_hue_sat(img):
     # plt.show()
     return nimg
 
+
 def data_aug(im, fm, bg):
-    im=im/255.0
-    bg=bg/255.0
-    if fm.shape[-1]==3:
+    im = im / 255.0
+    bg = bg / 255.0
+    if fm.shape[-1] == 3:
         im, fm = tight_crop(im, fm) 
     else:
-        im, fm =tight_crop_d(im, fm)
+        im, fm = tight_crop_d(im, fm)
     # change background img
     # msk = fm[:, :, 0] > 0
-    if fm.shape[-1]==3:
-        msk=((fm[:,:,0]!=0)&(fm[:,:,1]!=0)&(fm[:,:,2]!=0)).astype(np.uint8)
+    if fm.shape[-1] == 3:
+        msk = ((fm[:, :, 0] != 0) & (fm[:, :, 1] != 0) & (fm[:, :, 2] != 0)).astype(np.uint8)
     else:
-        msk=(fm!=0).astype(np.uint8)
+        msk = (fm != 0).astype(np.uint8)
     msk = np.expand_dims(msk, axis=2)
     # replace bg
     [fh, fw, _] = im.shape
-    chance=random.random()
+    chance = random.random()
     if chance > 0.3:
         bg = cv2.resize(bg, (200, 200))
         bg = np.tile(bg, (3, 3, 1))
         bg = bg[: fh, : fw, :]
-    elif chance < 0.3 and chance> 0.2:
+    elif chance < 0.3 and chance > 0.2:
         c = np.array([random.random(), random.random(), random.random()])
         bg = np.ones((fh, fw, 3)) * c
     else:
-        bg=np.zeros((fh, fw, 3))
-        msk=np.ones((fh, fw, 3))
+        bg = np.zeros((fh, fw, 3))
+        msk = np.ones((fh, fw, 3))
     im = bg * (1 - msk) + im * msk
     # jitter color
     im = color_jitter(im, 0.2, 0.2, 0.6, 0.6)
@@ -181,8 +183,6 @@ def data_aug(im, fm, bg):
     # plt.imshow(fm)
     # plt.show()
     return im, fm
-
-
 
 
 # def main():
