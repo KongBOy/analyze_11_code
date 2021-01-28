@@ -47,16 +47,16 @@ class UnetSkipConnectionBlock(nn.Module):
                  use_dropout=False):
         super(UnetSkipConnectionBlock, self).__init__()
         self.outermost = outermost
-        print("type(norm_layer)", type(norm_layer))
-        print("functools.partial", functools.partial)
+        # print("type(norm_layer)", type(norm_layer))
+        # print("functools.partial", functools.partial)
         if type(norm_layer) == functools.partial:
-            print("here1")
+            # print("here1")
             use_bias = norm_layer.func == nn.InstanceNorm2d
         else:
-            print("here2")
+            # print("here2")
             use_bias = norm_layer == nn.InstanceNorm2d
-            print("use_bias", use_bias)
-            print("norm_layer", norm_layer)
+            # print("use_bias", use_bias)
+            # print("norm_layer", norm_layer)
         if input_nc is None:
             input_nc = outer_nc
         downconv = nn.Conv2d(input_nc, inner_nc, kernel_size=4, stride=2, padding=1, bias=use_bias)
@@ -101,9 +101,9 @@ class UnetSkipConnectionBlock(nn.Module):
 
 
 unet_block     = UnetSkipConnectionBlock(64 * 8  , 64 * 8, input_nc=None    , submodule=None      , norm_layer=nn.BatchNorm2d, innermost=True)
-print(unet_block)
+# print(unet_block)
 
 in_channels = 3
 n_classes = 1
 g = UnetGenerator(input_nc=in_channels, output_nc=n_classes, num_downs=7)
-print(g)
+# print(g)

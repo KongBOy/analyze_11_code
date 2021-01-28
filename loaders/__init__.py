@@ -9,6 +9,6 @@ def get_loader(name):
     :param name:
     """
     return {
-        'doc3dwc':doc3dwcLoader,
-        'doc3dbmnic':doc3dbmnoimgcLoader,
+        'doc3dwc': doc3dwcLoader,
+        'doc3dbmnic': doc3dbmnoimgcLoader,
     }[name]

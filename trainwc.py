@@ -33,37 +33,29 @@ def write_log_file(log_file_name, losses, epoch, lrate, phase):
 
 
 def train(args):
-
     # Setup Dataloader
     data_loader = get_loader('doc3dwc')
-    data_path = args.data_path
-    t_loader = data_loader(data_path, is_transform=True, img_size=(
-        args.img_rows, args.img_cols), augmentations=True)
-    v_loader = data_loader(data_path, is_transform=True,
-                           split='val', img_size=(args.img_rows, args.img_cols))
+    data_path   = args.data_path
+    t_loader    = data_loader(data_path, is_transform=True, img_size=(args.img_rows, args.img_cols), augmentations=True)
+    v_loader    = data_loader(data_path, is_transform=True, split='val', img_size=(args.img_rows, args.img_cols))
 
-    n_classes = t_loader.n_classes
-    trainloader = data.DataLoader(
-        t_loader, batch_size=args.batch_size, num_workers=8, shuffle=True)
-    valloader = data.DataLoader(
-        v_loader, batch_size=args.batch_size, num_workers=8)
+    n_classes   = t_loader.n_classes
+    trainloader = data.DataLoader(t_loader, batch_size=args.batch_size, num_workers=8, shuffle=True)
+    valloader   = data.DataLoader(v_loader, batch_size=args.batch_size, num_workers=8)
 
     # Setup Model
     model = get_model(args.arch, n_classes, in_channels=3)
-    model = torch.nn.DataParallel(
-        model, device_ids=range(torch.cuda.device_count()))
+    model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
     model.cuda()
 
     # Activation
     htan = nn.Hardtanh(0, 1.0)
 
     # Optimizer
-    optimizer = torch.optim.Adam(
-        model.parameters(), lr=args.l_rate, weight_decay=5e-4, amsgrad=True)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.l_rate, weight_decay=5e-4, amsgrad=True)
 
     # LR Scheduler
-    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, mode='min', factor=0.5, patience=5, verbose=True)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=True)
 
     # Losses
     MSE = nn.MSELoss()
@@ -113,6 +105,7 @@ def train(args):
         model.train()
 
         for i, (images, labels) in enumerate(trainloader):
+            print("i~~", i)
             images = Variable(images.cuda())
             labels = Variable(labels.cuda())
 
@@ -137,12 +130,9 @@ def train(args):
                 avg_loss = 0.0
 
             if args.tboard and (i + 1) % 20 == 0:
-                show_wc_tnsboard(global_step, writer, images, labels,
-                                 pred, 8, 'Train Inputs', 'Train WCs', 'Train Pred. WCs')
-                writer.add_scalar('WC: L1 Loss/train',
-                                  avg_l1loss / (i + 1), global_step)
-                writer.add_scalar('WC: Grad Loss/train',
-                                  avg_gloss / (i + 1), global_step)
+                # show_wc_tnsboard(global_step, writer, images, labels, pred, 8, 'Train Inputs', 'Train WCs', 'Train Pred. WCs')
+                writer.add_scalar('WC: L1 Loss/train'  , avg_l1loss / (i + 1), global_step)
+                writer.add_scalar('WC: Grad Loss/train', avg_gloss / (i + 1), global_step)
 
         train_mse = train_mse / len(trainloader)
         avg_l1loss = avg_l1loss / len(trainloader)
@@ -239,3 +229,4 @@ if __name__ == '__main__':
 
 
 # CUDA_VISIBLE_DEVICES=1 python trainwc.py --arch unetnc --data_path ./data/DewarpNet/doc3d/ --batch_size 50 --tboard
+# CUDA_VISIBLE_DEVICES=1 python trainwc.py --arch unetnc --data_path F:/swat3D/ --batch_size 50 --tboard
