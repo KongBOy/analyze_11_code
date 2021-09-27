@@ -1,6 +1,6 @@
 import os
 import cv2
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import numpy as np
 import tqdm
 import random
@@ -21,10 +21,10 @@ def tight_crop(im, fm):
     maxy = max(y)
     im = im[miny : maxy + 1, minx : maxx + 1, :]
     fm = fm[miny : maxy + 1, minx : maxx + 1, :]
-    
+
     # px = int((maxx - minx) * 0.07)
     # py = int((maxy - miny) * 0.07)
-    
+
     # im = np.pad(im, ((py, py + 1), (px, px + 1), (0, 0)), 'constant')
     # fm = np.pad(fm, ((py, py + 1), (px, px + 1), (0, 0)), 'constant')
     # # crop
@@ -32,7 +32,7 @@ def tight_crop(im, fm):
     # cx2 = int(random.randint(0, 3) / 7.0 * px + 1)
     # cy1 = int(random.randint(0, 3) / 7.0 * py)
     # cy2 = int(random.randint(0, 3) / 7.0 * py + 1)
-    
+
     s = 20
     im = np.pad(im, ((s, s), (s, s), (0, 0)), 'constant')
     fm = np.pad(fm, ((s, s), (s, s), (0, 0)), 'constant')
@@ -56,10 +56,10 @@ def tight_crop_d(im, dm):
     maxy = max(y)
     im = im[miny : maxy + 1, minx : maxx + 1, :]
     dm = dm[miny : maxy + 1, minx : maxx + 1]
-    
+
     # px = int((maxx - minx) * 0.07)
     # py = int((maxy - miny) * 0.07)
-    
+
     # im = np.pad(im, ((py, py + 1), (px, px + 1), (0, 0)), 'constant')
     # fm = np.pad(fm, ((py, py + 1), (px, px + 1), (0, 0)), 'constant')
     # # crop
@@ -67,7 +67,7 @@ def tight_crop_d(im, dm):
     # cx2 = int(random.randint(0, 3) / 7.0 * px + 1)
     # cy1 = int(random.randint(0, 3) / 7.0 * py)
     # cy2 = int(random.randint(0, 3) / 7.0 * py + 1)
-    
+
     s = 20
     im = np.pad(im, ((s, s), (s, s), (0, 0)), 'constant')
     dm = np.pad(dm, ((s, s), (s, s)), 'constant')
@@ -136,7 +136,7 @@ def change_hue_sat(img):
         v = nimg[:, :, 1]
         v = np.where(v <= 255 - inc, v + inc, 255)
         nimg[:, :, 1] = v
-    
+
     nimg = cv2.cvtColor(nimg, cv2.COLOR_HSV2BGR)
     # f,axarr=plt.subplots(1,2)
     # axarr[0].imshow(img)
@@ -146,10 +146,13 @@ def change_hue_sat(img):
 
 
 def data_aug(im, fm, bg):
+    print("first im to 0~1")
     im = im / 255.0
+    print("first im.max()", im.max())
+    print("first im.min()", im.min())
     bg = bg / 255.0
     if fm.shape[-1] == 3:
-        im, fm = tight_crop(im, fm) 
+        im, fm = tight_crop(im, fm)
     else:
         im, fm = tight_crop_d(im, fm)
     # change background img
@@ -192,10 +195,10 @@ def data_aug(im, fm, bg):
 #             txpth=f.readline().strip()
 
 #     for im_name in filenames:
-        
+
 #         im_path = os.path.join(root,'img',im_name+'.png')
 #         img=cv2.imread(im_path).astype(np.uint8)
-        
+
 #         lbl_path = os.path.join(root, 'wc',im_name+'.exr')
 #         lbl = cv2.imread(lbl_path, cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
 

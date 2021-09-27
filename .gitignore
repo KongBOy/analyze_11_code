@@ -102,3 +102,22 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# kongboy
+runs/
+eval/*.png
+eval/*/*.png
+eval/*/*/*.png
+eval/*/*/*/*.png
+*.zip
+eval/*.zip
+eval/*/*.zip
+eval/*/*/*.zip
+eval/*/*/*/*.zip
+*.ink
+eval/*.ink
+eval/*/*.ink
+eval/*/*/*.ink
+eval/*/*/*/*.ink
+
+.vscode*

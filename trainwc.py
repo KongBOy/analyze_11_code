@@ -69,8 +69,7 @@ def train(args):
             checkpoint = torch.load(args.resume)
             model.load_state_dict(checkpoint['model_state'])
             optimizer.load_state_dict(checkpoint['optimizer_state'])
-            print("Loaded checkpoint '{}' (epoch {})"
-                  .format(args.resume, checkpoint['epoch']))
+            print("Loaded checkpoint '{}' (epoch {})".format(args.resume, checkpoint['epoch']))
             epoch_start = checkpoint['epoch']
         else:
             print("No checkpoint found at '{}'".format(args.resume))
@@ -229,4 +228,4 @@ if __name__ == '__main__':
 
 
 # CUDA_VISIBLE_DEVICES=1 python trainwc.py --arch unetnc --data_path ./data/DewarpNet/doc3d/ --batch_size 50 --tboard
-# CUDA_VISIBLE_DEVICES=1 python trainwc.py --arch unetnc --data_path F:/swat3D/ --batch_size 50 --tboard
+# CUDA_VISIBLE_DEVICES=1 python trainwc.py --arch unetnc --data_path G:/swat3D/ --batch_size 50 --tboard

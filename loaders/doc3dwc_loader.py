@@ -72,13 +72,13 @@ class doc3dwcLoader(data.Dataset):
         return im, lbl
 
     def transform(self, img, lbl):
-        img = m.imresize(img, self.img_size)  # uint8 with RGB mode
+        img = m.imresize(img, self.img_size)  # uint8 with RGB mode ### 這一行會自動把值又弄回 0~255 喔！ https://docs.scipy.org/doc/scipy-1.2.1/reference/generated/scipy.misc.imresize.html#scipy.misc.imresize
         if img.shape[-1] == 4:
             img = img[:, :, :3]  # Discard the alpha channel
         img = img[:, :, ::-1]    # RGB -> BGR
         # plt.imshow(img)
         # plt.show()
-        img = img.astype(float) / 255.0
+        img = img.astype(float) / 255.0  ### 因為 m.imresize 又會把值弄回 0~255 ，所以這邊要在除一次
         img = img.transpose(2, 0, 1)  # NHWC -> NCHW
         lbl = lbl.astype(float)
 

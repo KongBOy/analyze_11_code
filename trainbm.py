@@ -118,8 +118,7 @@ def train(args):
             target = model(images[:, 3:, :, :])
             target_nhwc = target.transpose(1, 2).transpose(2, 3)
             l1loss = loss_fn(target_nhwc, labels)
-            rloss, ssim, uworg, uwpred = reconst_loss(
-                images[:, :-1, :, :], target_nhwc, labels)
+            rloss, ssim, uworg, uwpred = reconst_loss(images[:, :-1, :, :], target_nhwc, labels)
             loss = (10.0 * l1loss) + (0.5 * rloss)  # + (0.3*ssim)
             # loss=l1loss
             avgl1loss += float(l1loss)
@@ -175,8 +174,7 @@ def train(args):
                 pred = target_nhwc.data.cpu()
                 gt = labels_val.cpu()
                 l1loss = loss_fn(target_nhwc, labels_val)
-                rloss, ssim, uworg, uwpred = reconst_loss(
-                    images_val[:, :-1, :, :], target_nhwc, labels_val)
+                rloss, ssim, uworg, uwpred = reconst_loss(images_val[:, :-1, :, :], target_nhwc, labels_val)
                 val_l1loss += float(l1loss.cpu())
                 val_rloss += float(rloss.cpu())
                 val_ssimloss += float(ssim.cpu())
