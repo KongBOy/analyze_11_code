@@ -100,10 +100,83 @@ class UnetSkipConnectionBlock(nn.Module):
             return torch.cat([x, self.model(x)], 1)
 
 
-unet_block     = UnetSkipConnectionBlock(64 * 8  , 64 * 8, input_nc=None    , submodule=None      , norm_layer=nn.BatchNorm2d, innermost=True)
-# print(unet_block)
+### 我自己加的，這樣就可以直接在這個檔案裡 按F5就可以看到建出來的model大概長啥樣子囉！
+if __name__ == "__main__":
+    unet_block     = UnetSkipConnectionBlock(64 * 8  , 64 * 8, input_nc=None    , submodule=None      , norm_layer=nn.BatchNorm2d, innermost=True)
+    # print(unet_block)
 
-in_channels = 3
-n_classes = 1
-g = UnetGenerator(input_nc=in_channels, output_nc=n_classes, num_downs=7)
-# print(g)
+    in_channels = 3
+    n_classes = 1
+    g = UnetGenerator(input_nc=in_channels, output_nc=n_classes, num_downs=7)
+    print(g)
+    """
+    UnetGenerator(
+    (model): UnetSkipConnectionBlock(
+        (model): Sequential(
+        (0): Conv2d(3, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+        (1): UnetSkipConnectionBlock(
+            (model): Sequential(
+            (0): LeakyReLU(negative_slope=0.2, inplace=True)
+            (1): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+            (2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            (3): UnetSkipConnectionBlock(
+                (model): Sequential(
+                (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                (1): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                (3): UnetSkipConnectionBlock(
+                    (model): Sequential(
+                    (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                    (1): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                    (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                    (3): UnetSkipConnectionBlock(
+                        (model): Sequential(
+                        (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                        (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                        (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                        (3): UnetSkipConnectionBlock(
+                            (model): Sequential(
+                            (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                            (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                            (2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                            (3): UnetSkipConnectionBlock(
+                                (model): Sequential(
+                                (0): LeakyReLU(negative_slope=0.2, inplace=True)
+                                (1): Conv2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                                (2): ReLU(inplace=True)
+                                (3): ConvTranspose2d(512, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                                (4): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                                )
+                            )
+                            (4): ReLU(inplace=True)
+                            (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                            (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                            )
+                        )
+                        (4): ReLU(inplace=True)
+                        (5): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                        (6): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                        )
+                    )
+                    (4): ReLU(inplace=True)
+                    (5): ConvTranspose2d(1024, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                    (6): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                    )
+                )
+                (4): ReLU(inplace=True)
+                (5): ConvTranspose2d(512, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+                (6): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                )
+            )
+            (4): ReLU(inplace=True)
+            (5): ConvTranspose2d(256, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+            (6): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+            )
+        )
+        (2): ReLU(inplace=True)
+        (3): ConvTranspose2d(128, 1, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+        (4): Tanh()
+        )
+    )
+    )
+    """
