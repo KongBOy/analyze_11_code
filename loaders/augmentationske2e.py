@@ -57,7 +57,7 @@ def color_jitter(im, brightness=0, contrast=0, saturation=0, hue=0):
     f = random.uniform(-saturation, saturation)
     hsv[:, :, 1] = np.clip(hsv[:, :, 1] + f, 0., 1.)
     im = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-    
+
     return im
 
 
