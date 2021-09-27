@@ -167,19 +167,14 @@ class kong_args():
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser(description='Params')
-    # parser.add_argument('--wc_model_path', nargs='?', type=str, default='',
-    #                     help='Path to the saved wc model')
-    # parser.add_argument('--bm_model_path', nargs='?', type=str, default='',
-    #                     help='Path to the saved bm model')
-    # parser.add_argument('--img_path', nargs='?', type=str, default='./eval/inp/',
-    #                     help='Path of the input image')
-    # parser.add_argument('--out_path', nargs='?', type=str, default='./eval/uw/',
-    #                     help='Path of the output unwarped image')
-    # parser.add_argument('--show', dest='show', action='store_true',
-    #                     help='Show the input image and output unwarped')
-    # parser.set_defaults(show=False)
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Params')
+    parser.add_argument('--wc_model_path', nargs='?', type=str, default='', help='Path to the saved wc model')
+    parser.add_argument('--bm_model_path', nargs='?', type=str, default='', help='Path to the saved bm model')
+    parser.add_argument('--img_path', nargs='?', type=str, default='./eval/inp/', help='Path of the input image')
+    parser.add_argument('--out_path', nargs='?', type=str, default='./eval/uw/', help='Path of the output unwarped image')
+    parser.add_argument('--show', dest='show', action='store_true', help='Show the input image and output unwarped')
+    parser.set_defaults(show=False)
+    args = parser.parse_args()
 
     # imgs_dir = "H:/0_School-108-1/paper09/Benchmark Dataset/crop"
     # dst_dir  = "H:/0_School-108-2/paper11/DewarpNet/eval/002-DewarpNet_eval_DocUNet_Benchmark_crop"

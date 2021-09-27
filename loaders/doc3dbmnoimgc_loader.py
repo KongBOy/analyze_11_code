@@ -45,7 +45,7 @@ class doc3dbmnoimgcLoader(data.Dataset):
 
     def __getitem__(self, index):
         im_name = self.files[self.split][index]                 #1/2Xec_Page_453X56X0001.png
-        im_path = pjoin(self.altroot, 'img', im_name + '.png')  
+        im_path = pjoin(self.altroot, 'img', im_name + '.png')
         img_foldr, fname = im_name.split('/')
         recon_foldr = 'chess48'
         wc_path = pjoin(self.altroot, 'wc' , im_name + '.exr')

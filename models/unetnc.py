@@ -8,12 +8,12 @@ import functools
 # if |num_downs| == 7, image of size 128x128 will become of size 1x1
 # at the bottleneck
 class UnetGenerator(nn.Module):
-    def __init__(self, 
-                 input_nc, 
-                 output_nc, 
-                 num_downs, 
+    def __init__(self,
+                 input_nc,
+                 output_nc,
+                 num_downs,
                  ngf=64,
-                 norm_layer=nn.BatchNorm2d, 
+                 norm_layer=nn.BatchNorm2d,
                  use_dropout=False):
         super(UnetGenerator, self).__init__()
 
@@ -36,14 +36,14 @@ class UnetGenerator(nn.Module):
 # X -------------------identity---------------------- X
 #   |-- downsampling -- |submodule| -- upsampling --|
 class UnetSkipConnectionBlock(nn.Module):
-    def __init__(self, 
-                 outer_nc, 
-                 inner_nc, 
+    def __init__(self,
+                 outer_nc,
+                 inner_nc,
                  input_nc=None,
-                 submodule=None, 
-                 outermost=False, 
-                 innermost=False, 
-                 norm_layer=nn.BatchNorm2d, 
+                 submodule=None,
+                 outermost=False,
+                 innermost=False,
+                 norm_layer=nn.BatchNorm2d,
                  use_dropout=False):
         super(UnetSkipConnectionBlock, self).__init__()
         self.outermost = outermost

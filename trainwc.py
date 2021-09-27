@@ -201,26 +201,16 @@ def train(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Hyperparams')
-    parser.add_argument('--arch', nargs='?', type=str, default='dnetccnl',
-                        help='Architecture to use [\'dnetccnl, unetnc\']')
-    parser.add_argument('--data_path', nargs='?', type=str, default='',
-                        help='Data path to load data')
-    parser.add_argument('--img_rows', nargs='?', type=int, default=256,
-                        help='Height of the input image')
-    parser.add_argument('--img_cols', nargs='?', type=int, default=256,
-                        help='Width of the input image')
-    parser.add_argument('--n_epoch', nargs='?', type=int, default=100,
-                        help='# of the epochs')
-    parser.add_argument('--batch_size', nargs='?', type=int, default=1,
-                        help='Batch Size')
-    parser.add_argument('--l_rate', nargs='?', type=float, default=1e-5,
-                        help='Learning Rate')
-    parser.add_argument('--resume', nargs='?', type=str, default=None,
-                        help='Path to previous saved model to restart from')
-    parser.add_argument('--logdir', nargs='?', type=str, default='./checkpoints-wc/',
-                        help='Path to store the loss logs')
-    parser.add_argument('--tboard', dest='tboard', action='store_true',
-                        help='Enable visualization(s) on tensorboard | False by default')
+    parser.add_argument('--arch', nargs='?', type=str, default='dnetccnl', help='Architecture to use [\'dnetccnl, unetnc\']')
+    parser.add_argument('--data_path', nargs='?', type=str, default='', help='Data path to load data')
+    parser.add_argument('--img_rows', nargs='?', type=int, default=256, help='Height of the input image')
+    parser.add_argument('--img_cols', nargs='?', type=int, default=256, help='Width of the input image')
+    parser.add_argument('--n_epoch', nargs='?', type=int, default=100, help='# of the epochs')
+    parser.add_argument('--batch_size', nargs='?', type=int, default=1, help='Batch Size')
+    parser.add_argument('--l_rate', nargs='?', type=float, default=1e-5 help='Learning Rate')
+    parser.add_argument('--resume', nargs='?', type=str, default=None, help='Path to previous saved model to restart from')
+    parser.add_argument('--logdir', nargs='?', type=str, default='./checkpoints-wc/', help='Path to store the loss logs')
+    parser.add_argument('--tboard', dest='tboard', action='store_true', help='Enable visualization(s) on tensorboard | False by default')
     parser.set_defaults(tboard=False)
 
     args = parser.parse_args()
