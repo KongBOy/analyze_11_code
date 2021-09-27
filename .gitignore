@@ -114,10 +114,10 @@ eval/*.zip
 eval/*/*.zip
 eval/*/*/*.zip
 eval/*/*/*/*.zip
-*.ink
-eval/*.ink
-eval/*/*.ink
-eval/*/*/*.ink
-eval/*/*/*/*.ink
+*.lnk
+eval/*.lnk
+eval/*/*.lnk
+eval/*/*/*.lnk
+eval/*/*/*/*.lnk
 
 .vscode*
