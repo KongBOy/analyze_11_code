@@ -16,7 +16,7 @@ from torch.utils import data
 
 from loaders.augmentationsk import data_aug, tight_crop
 
-
+import pdb
 class doc3dwcLoader(data.Dataset):
     """
     Loader for world coordinate regression and RGB images
@@ -59,14 +59,19 @@ class doc3dwcLoader(data.Dataset):
         im = np.array(im, dtype=np.uint8)
         lbl = cv2.imread(lbl_path, cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
         lbl = np.array(lbl, dtype=np.float)
+        ''' 如果是 val dataset 就單純 tight_crop 就好了 '''
         if 'val' in self.split:
             im, lbl = tight_crop(im / 255.0, lbl)
+
+        ''' 如果是 train dataset， 要做： tight_crop + 換背景 + 顏色jitter '''
         if self.augmentations:          # this is for training, default false for validation\
             tex_id = random.randint(0, len(self.txpths) - 1)
             txpth = self.txpths[tex_id]
             tex = cv2.imread(os.path.join(self.root[:-7], txpth)).astype(np.uint8)
             bg  = cv2.resize(tex, self.img_size, interpolation=cv2.INTER_NEAREST)
             im, lbl = data_aug(im, lbl, bg)
+
+        ''' 是否轉成 pytorch 的 tensor， train / val dataset 都會轉'''
         if self.is_transform:
             im, lbl = self.transform(im, lbl)
         return im, lbl
@@ -100,13 +105,15 @@ class doc3dwcLoader(data.Dataset):
         return img, lbl
 
 
-# # Leave code for debugging purposes
+# Leave code for debugging purposes
 # if __name__ == '__main__':
-#     local_path = './data/DewarpNet/doc3d/'
+#     # local_path = './data/DewarpNet/doc3d/'
+#     local_path = 'M:/swat3D'
 #     bs = 4
-#     dst = doc3dwcLoader(root=local_path, split='trainswat3dmini', is_transform=True, augmentations=True)
+#     dst = doc3dwcLoader(root=local_path, split='train', is_transform=True, augmentations=True)
 #     trainloader = data.DataLoader(dst, batch_size=bs)
 #     for i, data in enumerate(trainloader):
+#         print(i)
 #         imgs, labels = data
 #         imgs = imgs.numpy()
 #         lbls = labels.numpy()
