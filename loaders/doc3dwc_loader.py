@@ -67,6 +67,7 @@ class doc3dwcLoader(data.Dataset):
         if self.augmentations:          # this is for training, default false for validation\
             tex_id = random.randint(0, len(self.txpths) - 1)
             txpth = self.txpths[tex_id]
+            # print("os.path.join(self.root[:-7], txpth))", os.path.join(self.root[:-7], txpth))
             tex = cv2.imread(os.path.join(self.root[:-7], txpth)).astype(np.uint8)
             bg  = cv2.resize(tex, self.img_size, interpolation=cv2.INTER_NEAREST)
             im, lbl = data_aug(im, lbl, bg)

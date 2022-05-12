@@ -16,7 +16,7 @@ def tight_crop(im, fm):
     '''
     因為 pytorch 的 Dataset 好像沒辦法用 plt.imshow() 和 breakpoint， 所以只好 用 plt.savefig 和 VSCode的 中斷點來 分析 囉～
     '''
-    fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(20, 5))
+    # fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(20, 5))
     # different tight crop
     msk = ((fm[:, :, 0] != 0) & (fm[:, :, 1] != 0) & (fm[:, :, 2] != 0)).astype(np.uint8)
     # ax[0].set_title("ord_img")
