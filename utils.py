@@ -208,15 +208,16 @@ def show_unwarp_tnsboard(global_step, writer, uwpred, uworg, grid_samples, gt_ta
     writer.add_image(pred_tag, grid_uwpr, global_step)
 
 
-def show_wc_tnsboard(global_step, writer, images, labels, pred, grid_samples, inp_tag, gt_tag, pred_tag):
-    idxs = torch.LongTensor(random.sample(
-        range(images.shape[0]), min(grid_samples, images.shape[0])))
-    grid_inp = torchvision.utils.make_grid(
-        images[idxs], normalize=True, scale_each=True)
+### show_wc_tnsboard(global_step, writer, images, labels, pred,      8,     'Train Inputs', 'Train WCs', 'Train Pred. WCs')
+def show_wc_tnsboard(global_step, writer, images, labels, pred, grid_samples,    inp_tag,     gt_tag,        pred_tag):
+    idxs = torch.LongTensor(random.sample( range(images.shape[0]), min(grid_samples, images.shape[0])))
+
+    ### IN_dis_img
+    grid_inp = torchvision.utils.make_grid(images[idxs], normalize=True, scale_each=True)
     writer.add_image(inp_tag, grid_inp, global_step)
-    grid_lbl = torchvision.utils.make_grid(
-        labels[idxs], normalize=True, scale_each=True)
+    ### GT_WC
+    grid_lbl = torchvision.utils.make_grid(labels[idxs], normalize=True, scale_each=True)
     writer.add_image(gt_tag, grid_lbl, global_step)
-    grid_pred = torchvision.utils.make_grid(
-        pred[idxs], normalize=True, scale_each=True)
+    ### Pred_WC
+    grid_pred = torchvision.utils.make_grid(pred[idxs], normalize=True, scale_each=True)
     writer.add_image(pred_tag, grid_pred, global_step)
