@@ -1,7 +1,12 @@
 hdf5storage
 tqdm
 scipy==1.1.0
-numpy
 matplotlib
 visdom
 tensorboardX
+
+opencv-python==4.5.3.56
+
+torch
+torchvision
+torchaudio
