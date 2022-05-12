@@ -45,8 +45,8 @@ def train(args):
 
     # Setup Model
     model = get_model(args.arch, n_classes, in_channels=3)
-    # model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
-    # model.cuda()
+    model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))  ### 原GPU版
+    model.cuda()  ### GPU跑
 
     # Activation
     htan = nn.Hardtanh(0, 1.0)
@@ -103,22 +103,24 @@ def train(args):
         train_mse = 0.0
         model.train()
 
-        for i, (images, labels) in enumerate(trainloader):
-            print("i~~", i)
-            import matplotlib.pyplot as plt
-            images_show = images.numpy().transpose(0, 2, 3, 1)
-            labels_show = labels.numpy().transpose(0, 2, 3, 1)
-            fig, ax = plt.subplots(nrows=1, ncols=2)
-            ax[0].imshow(images_show[0])
-            ax[1].imshow(labels_show[0])
-            plt.show()
-            print("images.shape", images.shape)
-            print("labels.shape", labels.shape)
+        for i, (images, labels) in enumerate(tqdm(trainloader)):
+            ### 我自己加的 debugcode
+            # print("i~~", i)
+            # import matplotlib.pyplot as plt
+            # images_show = images.numpy().transpose(0, 2, 3, 1)
+            # labels_show = labels.numpy().transpose(0, 2, 3, 1)
+            # fig, ax = plt.subplots(nrows=1, ncols=2)
+            # ax[0].imshow(images_show[0])
+            # ax[1].imshow(labels_show[0])
+            # plt.show()
+            # print("images.shape", images.shape)
+            # print("labels.shape", labels.shape)
 
-            # images = Variable(images.cuda())
-            # labels = Variable(labels.cuda())
-            images = Variable(images)  ### 我改的 CPU版
-            labels = Variable(labels)  ### 我改的 CPU版
+            images = Variable(images.cuda())  ### 原GPU版
+            labels = Variable(labels.cuda())  ### 原GPU版
+            ### 我自己加的 debugcode
+            # images = Variable(images)  ### 我改的 CPU版
+            # labels = Variable(labels)  ### 我改的 CPU版
 
             optimizer.zero_grad()
             outputs = model(images)
@@ -141,7 +143,7 @@ def train(args):
                 avg_loss = 0.0
 
             if args.tboard and (i + 1) % 20 == 0:
-                # show_wc_tnsboard(global_step, writer, images, labels, pred, 8, 'Train Inputs', 'Train WCs', 'Train Pred. WCs')
+                show_wc_tnsboard(global_step, writer, images, labels, pred, 8, 'Train Inputs', 'Train WCs', 'Train Pred. WCs')
                 writer.add_scalar('WC: L1 Loss/train'  , avg_l1loss / (i + 1), global_step)
                 writer.add_scalar('WC: Grad Loss/train', avg_gloss / (i + 1), global_step)
 
@@ -178,8 +180,7 @@ def train(args):
                 val_gloss += float(g_loss)
 
         if args.tboard:
-            show_wc_tnsboard(epoch + 1, writer, images_val, labels_val,
-                             pred, 8, 'Val Inputs', 'Val WCs', 'Val Pred. WCs')
+            show_wc_tnsboard(epoch + 1, writer, images_val, labels_val, pred, 8, 'Val Inputs', 'Val WCs', 'Val Pred. WCs')
             writer.add_scalar('WC: L1 Loss/val', val_loss, epoch + 1)
             writer.add_scalar('WC: Grad Loss/val', val_gloss, epoch + 1)
 
@@ -239,11 +240,11 @@ if __name__ == '__main__':
     # parser.set_defaults(tboard=False)
     # args = parser.parse_args()
 
-    imgs_dir  = "G:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see_crop_tightly"
-    dst_dir   = "H:/0_School-108-2/paper11/DewarpNet/eval/004_DewarpNet_eval_kong_sees_crop"
+    # imgs_dir  = "G:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see_crop_tightly"
+    # dst_dir   = "H:/0_School-108-2/paper11/DewarpNet/eval/004_DewarpNet_eval_kong_sees_crop"
     # data_path = "M:/swat3D"
     # data_path = "J:/swat3D"  ### 2022/03/30
-    data_path = "G:/swat3D"  ### 2022/05/10
+    data_path = "J:/swat3D"  ### 2022/05/10
     default_args = kong_args(arch       = "dnetccnl",
                              data_path  = "",
                              img_rows   = 256,
@@ -260,11 +261,11 @@ if __name__ == '__main__':
                      img_rows   = 256,        ### Resize 後的 height 大小
                      img_cols   = 256,        ### Resize 後的 width  大小
                      n_epoch    = 100,
-                     batch_size = 3,          ### DewarpNet 附贈的程式碼 是用50， 我這邊可能為了好測試所以用1
+                     batch_size = 50,          ### DewarpNet 附贈的程式碼 是用50， 我這邊可能為了好測試所以用1
                      l_rate     = 1e-5,
                      resume     = None,
                      logdir     = './checkpoints-wc/',
-                     tboard     = False,
+                     tboard     = True,
                     )
     train(args)
 
