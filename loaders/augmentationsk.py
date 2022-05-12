@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tqdm
 import random
+import pdb
 
 # root='/media/hilab/sagniksSSD/Sagnik/DewarpNet/swat3d/'
 # filenames=['7/2_427_8-cp_Page_1362-4rw0001','7/2_87_5-ec_Page_040-AZI0001','7/1_811_3-ny_Page_554-sof0001','7/2_168_4-ny_Page_888-qoK0001',
@@ -12,8 +13,20 @@ import random
 
 
 def tight_crop(im, fm):
+    '''
+    因為 pytorch 的 Dataset 好像沒辦法用 plt.imshow() 和 breakpoint， 所以只好 用 plt.savefig 和 VSCode的 中斷點來 分析 囉～
+    '''
+    fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(20, 5))
     # different tight crop
     msk = ((fm[:, :, 0] != 0) & (fm[:, :, 1] != 0) & (fm[:, :, 2] != 0)).astype(np.uint8)
+    ax[0].set_title("ord_img")
+    ax[0].imshow(im)
+    ax[1].set_title("mask")
+    ax[1].imshow(msk)
+
+    # print("msk.shape", msk.shape)  ### (448, 448)
+    # print(im.shape)  ### (448, 448, 3)  0 ~ 1
+    # print(fm.shape)  ### (448, 448, 3) -1.174 ~ 1.1318
     [y, x] = (msk).nonzero()
     minx = min(x)
     maxx = max(x)
@@ -21,6 +34,8 @@ def tight_crop(im, fm):
     maxy = max(y)
     im = im[miny : maxy + 1, minx : maxx + 1, :]
     fm = fm[miny : maxy + 1, minx : maxx + 1, :]
+    ax[2].set_title("ord_img_croped")
+    ax[2].imshow(im)
 
     # px = int((maxx - minx) * 0.07)
     # py = int((maxy - miny) * 0.07)
@@ -41,8 +56,19 @@ def tight_crop(im, fm):
     cy1 = random.randint(0, s - 5)
     cy2 = random.randint(0, s - 5) + 1
 
+    ax[3].set_title("ord_img_crop_&_pad_&_jit")
+    ax[3].imshow(im)
+    plt.savefig("analyze_by_kong/tight_crop")
+
+    print("cx1", cx1)
+    print("cx2", cx2)
+    print("cy1", cy1)
+    print("cy2", cy2)
+    print("im.shape", im.shape)
+
     im = im[cy1 : -cy2, cx1 : -cx2, :]
     fm = fm[cy1 : -cy2, cx1 : -cx2, :]
+    print("im.shape", im.shape)
     return im, fm
 
 
@@ -146,33 +172,42 @@ def change_hue_sat(img):
 
 
 def data_aug(im, fm, bg):
-    print("first im to 0~1")
+    '''
+    因為 pytorch 的 Dataset 好像沒辦法用 plt.imshow() 和 breakpoint， 所以只好 用 plt.savefig 和 VSCode的 中斷點來 分析 囉～
+    '''
+    fig, ax = plt.subplots(nrows=1, ncols=4, figsize=(20, 5))
+    # print("first im to 0~1")
     im = im / 255.0
-    print("first im.max()", im.max())
-    print("first im.min()", im.min())
+    # print("first im.max()", im.max())
+    # print("first im.min()", im.min())
     bg = bg / 255.0
     if fm.shape[-1] == 3:
         im, fm = tight_crop(im, fm)
+        print("tight_crop finish")
     else:
         im, fm = tight_crop_d(im, fm)
+        print("tight_crop_d finish")
     # change background img
     # msk = fm[:, :, 0] > 0
     if fm.shape[-1] == 3:
-        msk = ((fm[:, :, 0] != 0) & (fm[:, :, 1] != 0) & (fm[:, :, 2] != 0)).astype(np.uint8)
+        msk = ((fm[:, :, 0] != 0) & (fm[:, :, 1] != 0) & (fm[:, :, 2] != 0)).astype(np.uint8)  ### shape 比如 (294, 214)
     else:
         msk = (fm != 0).astype(np.uint8)
-    msk = np.expand_dims(msk, axis=2)
+    print("msk.shape", msk.shape)
+    msk = np.expand_dims(msk, axis=2)  ### shape 比如 (294, 214, 1)
+    print("msk.shape", msk.shape)
+
     # replace bg
     [fh, fw, _] = im.shape
     chance = random.random()
-    if chance > 0.3:
+    if chance > 0.3:  ### texture背景
         bg = cv2.resize(bg, (200, 200))
         bg = np.tile(bg, (3, 3, 1))
         bg = bg[: fh, : fw, :]
-    elif chance < 0.3 and chance > 0.2:
+    elif chance < 0.3 and chance > 0.2:  ### 單色背景
         c = np.array([random.random(), random.random(), random.random()])
         bg = np.ones((fh, fw, 3)) * c
-    else:
+    else:  ### 全黑背景， 就是 無背景拉
         bg = np.zeros((fh, fw, 3))
         msk = np.ones((fh, fw, 3))
     im = bg * (1 - msk) + im * msk
