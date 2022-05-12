@@ -121,3 +121,5 @@ eval/*/*/*.lnk
 eval/*/*/*/*.lnk
 
 .vscode*
+
+try*
