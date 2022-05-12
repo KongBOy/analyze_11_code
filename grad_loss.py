@@ -118,24 +118,31 @@ class Gradloss(torch.nn.Module):
 
 # For testing
 if __name__ == '__main__':
+    window_size = 3
+    padding = int((window_size - 1) / 2)
     img1_path = "1_1_8-pp_Page_465-YHc0001.exr"  ### "1_1_2-cp_Page_0654-XKI0001.exr"
     img2_path = "1_1_1-pr_Page_141-PZU0001.exr"  ### "1_1_1-tc_Page_065-YGB0001.exr"
     img1 = cv2.imread(img1_path, cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
-    print(f"img1.shape={img1.shape}")
     img2 = cv2.imread(img2_path, cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
+    print(f"img1.shape={img1.shape}")
     print(f"img2.shape={img2.shape}")
 
     # OpenCV sobel gradient for to check correctness
-    sobelx1 = cv2.Sobel(img1, cv2.CV_64F, 1, 0, ksize=5)
-    sobely1 = cv2.Sobel(img1, cv2.CV_64F, 0, 1, ksize=5)
-    sobelx2 = cv2.Sobel(img2, cv2.CV_64F, 1, 0, ksize=5)
-    sobely2 = cv2.Sobel(img2, cv2.CV_64F, 0, 1, ksize=5)
+    ### cv2.sobel(img, dtype的概念, 要不要看dx, 要不要看dy, k_size)  https://www.itread01.com/content/1542925983.html
+    sobelx1 = cv2.Sobel(img1, cv2.CV_64F, 1, 0, ksize=window_size)
+    sobely1 = cv2.Sobel(img1, cv2.CV_64F, 0, 1, ksize=window_size)
+    sobelx2 = cv2.Sobel(img2, cv2.CV_64F, 1, 0, ksize=window_size)
+    sobely2 = cv2.Sobel(img2, cv2.CV_64F, 0, 1, ksize=window_size)
+    sobely3 = cv2.Sobel(img2, cv2.CV_64F, 1, 1, ksize=window_size)
 
     img1 = np.array(img1, dtype=np.float).transpose(2, 0, 1)  ### CHW, (3, 488, 488)
     img2 = np.array(img2, dtype=np.float).transpose(2, 0, 1)  ### CHW, (3, 488, 488)
+    img1_tv = -img1[:, -1:, :] + img1[:, 1:, :]
+    img1_tv = img1_tv.transpose(1, 2, 0)
     img1 = torch.from_numpy(img1).float().unsqueeze(0)        ### NCHW, (1, 3, 488, 488)
     img2 = torch.from_numpy(img2).float().unsqueeze(0)        ### NCHW, (1, 3, 488, 488)
-    gradloss = Gradloss(window_size=5, padding=2)
+
+    gradloss = Gradloss(window_size=window_size, padding=padding)
 
     same_gloss, label_gradx, label_grady = gradloss(img1, img1)
     gradx1 = np.array(label_gradx[0]).transpose(1, 2, 0)
@@ -145,15 +152,19 @@ if __name__ == '__main__':
     gradx2 = np.array(label_gradx[0]).transpose(1, 2, 0)
     grady2 = np.array(label_grady[0]).transpose(1, 2, 0)
 
-    f, axarr = plt.subplots(2, 4)
+    show_size = 4.5
+    f, axarr = plt.subplots(2, 5, figsize=(show_size * 4, show_size * 2))
     axarr[0][0].imshow(sobelx1)
     axarr[0][1].imshow(sobely1)
     axarr[0][2].imshow(sobelx2)
     axarr[0][3].imshow(sobely2)
+    axarr[0][4].imshow(img1_tv)
+
     axarr[1][0].imshow(gradx1)
     axarr[1][1].imshow(grady1)
     axarr[1][2].imshow(gradx2)
     axarr[1][3].imshow(grady2)
+    plt.tight_layout()
     plt.show()
 
     print(same_gloss.item())

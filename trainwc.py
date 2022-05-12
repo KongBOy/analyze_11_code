@@ -40,13 +40,13 @@ def train(args):
     v_loader    = data_loader(data_path, is_transform=True, split='val', img_size=(args.img_rows, args.img_cols))
 
     n_classes   = t_loader.n_classes
-    trainloader = data.DataLoader(t_loader, batch_size=args.batch_size, num_workers=8, shuffle=True)
-    valloader   = data.DataLoader(v_loader, batch_size=args.batch_size, num_workers=8)
+    trainloader = data.DataLoader(t_loader, batch_size=args.batch_size, num_workers=1, shuffle=True)
+    valloader   = data.DataLoader(v_loader, batch_size=args.batch_size, num_workers=1)
 
     # Setup Model
     model = get_model(args.arch, n_classes, in_channels=3)
-    model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
-    model.cuda()
+    # model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
+    # model.cuda()
 
     # Activation
     htan = nn.Hardtanh(0, 1.0)
@@ -105,13 +105,25 @@ def train(args):
 
         for i, (images, labels) in enumerate(trainloader):
             print("i~~", i)
-            images = Variable(images.cuda())
-            labels = Variable(labels.cuda())
+            import matplotlib.pyplot as plt
+            images_show = images.numpy().transpose(0, 2, 3, 1)
+            labels_show = labels.numpy().transpose(0, 2, 3, 1)
+            fig, ax = plt.subplots(nrows=1, ncols=2)
+            ax[0].imshow(images_show[0])
+            ax[1].imshow(labels_show[0])
+            plt.show()
+            print("images.shape", images.shape)
+            print("labels.shape", labels.shape)
+
+            # images = Variable(images.cuda())
+            # labels = Variable(labels.cuda())
+            images = Variable(images)  ### 我改的 CPU版
+            labels = Variable(labels)  ### 我改的 CPU版
 
             optimizer.zero_grad()
             outputs = model(images)
             pred = htan(outputs)
-            g_loss = gloss(pred, labels)
+            g_loss, _, _ = gloss(pred, labels)
             l1loss = loss_fn(pred, labels)
             loss = l1loss  # +(0.2*g_loss)
             avg_l1loss += float(l1loss)
@@ -198,24 +210,65 @@ def train(args):
             torch.save(state, args.logdir + "{}_{}_{}_{}_{}_model.pkl".format(
                 args.arch, epoch + 1, val_mse, train_mse, experiment_name))
 
+class kong_args():
+    def __init__(self, arch="dnetccnl", data_path="", img_rows=256, img_cols=256, n_epoch= 100, batch_size=1, l_rate=1e-5, resume=None, logdir='./checkpoints-wc/', tboard=False,):
+        self.arch       = arch
+        self.data_path  = data_path
+        self.img_rows   = img_rows
+        self.img_cols   = img_cols
+        self.n_epoch    = n_epoch
+        self.batch_size = batch_size
+        self.l_rate     = l_rate
+        self.resume     = resume
+        self.logdir     = logdir
+        self.tboard     = tboard
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Hyperparams')
-    parser.add_argument('--arch', nargs='?', type=str, default='dnetccnl', help='Architecture to use [\'dnetccnl, unetnc\']')
-    parser.add_argument('--data_path', nargs='?', type=str, default='', help='Data path to load data')
-    parser.add_argument('--img_rows', nargs='?', type=int, default=256, help='Height of the input image')
-    parser.add_argument('--img_cols', nargs='?', type=int, default=256, help='Width of the input image')
-    parser.add_argument('--n_epoch', nargs='?', type=int, default=100, help='# of the epochs')
-    parser.add_argument('--batch_size', nargs='?', type=int, default=1, help='Batch Size')
-    parser.add_argument('--l_rate', nargs='?', type=float, default=1e-5 help='Learning Rate')
-    parser.add_argument('--resume', nargs='?', type=str, default=None, help='Path to previous saved model to restart from')
-    parser.add_argument('--logdir', nargs='?', type=str, default='./checkpoints-wc/', help='Path to store the loss logs')
-    parser.add_argument('--tboard', dest='tboard', action='store_true', help='Enable visualization(s) on tensorboard | False by default')
-    parser.set_defaults(tboard=False)
+    # parser = argparse.ArgumentParser(description='Hyperparams')
+    # parser.add_argument('--arch', nargs='?', type=str, default='dnetccnl', help='Architecture to use [\'dnetccnl, unetnc\']')
+    # parser.add_argument('--data_path', nargs='?', type=str, default='', help='Data path to load data')
+    # parser.add_argument('--img_rows', nargs='?', type=int, default=256, help='Height of the input image')
+    # parser.add_argument('--img_cols', nargs='?', type=int, default=256, help='Width of the input image')
+    # parser.add_argument('--n_epoch', nargs='?', type=int, default=100, help='# of the epochs')
+    # parser.add_argument('--batch_size', nargs='?', type=int, default=1, help='Batch Size')
+    # parser.add_argument('--l_rate', nargs='?', type=float, default=1e-5 help='Learning Rate')
+    # parser.add_argument('--resume', nargs='?', type=str, default=None, help='Path to previous saved model to restart from')
+    # parser.add_argument('--logdir', nargs='?', type=str, default='./checkpoints-wc/', help='Path to store the loss logs')
+    # parser.add_argument('--tboard', dest='tboard', action='store_true', help='Enable visualization(s) on tensorboard | False by default')
+    # parser.set_defaults(tboard=False)
+    # args = parser.parse_args()
 
-    args = parser.parse_args()
+    imgs_dir  = "G:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see_crop_tightly"
+    dst_dir   = "H:/0_School-108-2/paper11/DewarpNet/eval/004_DewarpNet_eval_kong_sees_crop"
+    # data_path = "M:/swat3D"
+    # data_path = "J:/swat3D"  ### 2022/03/30
+    data_path = "G:/swat3D"  ### 2022/05/10
+    default_args = kong_args(arch       = "dnetccnl",
+                             data_path  = "",
+                             img_rows   = 256,
+                             img_cols   = 256,
+                             n_epoch    = 100,
+                             batch_size = 50,  ### 但是 https://github.com/cvlab-stonybrook/DewarpNet 上 寫的 training指令用的是 batch_size=50！像這樣：python trainwc.py --arch unetnc --data_path ./data/DewarpNet/doc3d/ --batch_size 50 --tboard
+                             l_rate     = 1e-5,
+                             resume     = None,
+                             logdir     = './checkpoints-wc/',
+                             tboard     = False,
+                             )
+    args = kong_args(arch       = "unetnc",
+                     data_path  = data_path,  ### Doc3D 的位置
+                     img_rows   = 256,        ### Resize 後的 height 大小
+                     img_cols   = 256,        ### Resize 後的 width  大小
+                     n_epoch    = 100,
+                     batch_size = 3,          ### DewarpNet 附贈的程式碼 是用50， 我這邊可能為了好測試所以用1
+                     l_rate     = 1e-5,
+                     resume     = None,
+                     logdir     = './checkpoints-wc/',
+                     tboard     = False,
+                    )
     train(args)
 
-
+### 原始的程式碼附的
 # CUDA_VISIBLE_DEVICES=1 python trainwc.py --arch unetnc --data_path ./data/DewarpNet/doc3d/ --batch_size 50 --tboard
+### 我自己改的
 # CUDA_VISIBLE_DEVICES=1 python trainwc.py --arch unetnc --data_path G:/swat3D/ --batch_size 50 --tboard

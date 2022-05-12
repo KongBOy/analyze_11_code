@@ -2,10 +2,11 @@
 ### 我自己分析畫出的流程圖 infer.py
 ### https://drive.google.com/file/d/1muSsMigSQGIhpZG7vEsq_d-JK7vmnv8X/view?usp=sharing
 import sys
-sys.path.append("C:/Users/TKU/Desktop/kong_model2/kong_util")
+sys.path.append(r"F:\kong_model2\kong_util")
 from matplot_fig_ax_util import check_fig_ax_init, img_scatter_visual
 from flow_bm_util import dis_bm_rec_visual, bm_arrow_visual
 from build_dataset_combine import Check_dir_exist_and_build
+from wc_util import wc_3d_plot
 
 import os
 import torch
@@ -140,15 +141,25 @@ def test(args, img_path, fname):
         plt.show()
 
     if args.kong_show:
-        fig, ax, ax_c = dis_bm_rec_visual(debug_dict["step1 imgorg"], debug_dict["step2_4 outputs_bm"], uwpred, img_smaller=0.4,
-                                        x_min= -1.00, x_max=+1.00, y_min=-1.00, y_max=+1.00,
-                                        jump_r=3, jump_c=3,
-                                        dis_alpha=0.6, dis_dot_s=1,
-                                        bm_arrow_alpha=0.5, bm_arrow_cmap="hsv",
-                                        bm_after_dot_alpha=0.35, bm_after_dot_cmap="hsv",
-                                        tight_layout=True)
         name = fname.split(".")[0]
-        plt.savefig(args.out_path + "/dis_bm_rec/" + name + "_dis_bm_rec")
+
+        # fig, ax, ax_c = dis_bm_rec_visual(debug_dict["step1 imgorg"], debug_dict["step2_4 outputs_bm"], uwpred, img_smaller=0.4,
+        #                                 x_min= -1.00, x_max=+1.00, y_min=-1.00, y_max=+1.00,
+        #                                 jump_r=3, jump_c=3,
+        #                                 dis_alpha=0.6, dis_dot_s=1,
+        #                                 bm_arrow_alpha=0.5, bm_arrow_cmap="hsv",
+        #                                 bm_after_dot_alpha=0.35, bm_after_dot_cmap="hsv",
+        #                                 tight_layout=True)
+        # plt.savefig(args.out_path + "/dis_bm_rec/" + name + "_dis_bm_rec")
+        # plt.close()
+
+        fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(5 * 3, 5))
+        ax[0].imshow( debug_dict["step2_2 pred_wc"][..., 0], vmin=0, vmax=1 )
+        ax[1].imshow( debug_dict["step2_2 pred_wc"][..., 1], vmin=0, vmax=1 )
+        ax[2].imshow( debug_dict["step2_2 pred_wc"][..., 2], vmin=0, vmax=1 )
+        fig.tight_layout()
+        plt.savefig(args.out_path + "/W_pred/" + name + "_W_pred")
+        # plt.show()
         plt.close()
 
     # Save the output
@@ -182,12 +193,32 @@ if __name__ == '__main__':
     # imgs_dir = "G:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see/dis_imgs"
     # dst_dir  = "H:/0_School-108-2/paper11/DewarpNet/eval/003_DewarpNet_eval_kong_sees"
 
-    imgs_dir = "G:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see_crop_tightly"
-    dst_dir  = "H:/0_School-108-2/paper11/DewarpNet/eval/004_DewarpNet_eval_kong_sees_crop"
+    # imgs_dir = "G:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see_crop_tightly"
+    # dst_dir  = "H:/0_School-108-2/paper11/DewarpNet/eval/004_DewarpNet_eval_kong_sees_crop"
+
+    # imgs_dir = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see_crop_tightly"
+    # dst_dir  = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_hw768/see_crop_tightly/DewarpNet_Result"
+
+    # imgs_dir = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_and_paper_hw512_have_dtd_hdr_mix_bg/see/dis_imgs"
+    # dst_dir  = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_and_paper_hw512_have_dtd_hdr_mix_bg/see/dis_imgs/DewarpNet_Result"
+
+    # imgs_dir = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_and_paper_hw512_have_dtd_hdr_mix_bg/see/dis_imgs_try_DewarpNet"
+    # dst_dir  = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_and_paper_hw512_have_dtd_hdr_mix_bg/see/dis_imgs_try_DewarpNet/DewarpNet_Result"
+    
+
+    # imgs_dir = r"M:\0_School-108-2_M2B\paper11\DewarpNet\try_kong_see_size512_pad20_resize256"
+    # imgs_dir = r"M:\0_School-108-2_M2B\paper11\DewarpNet\try_kong_see_size512_pad60_resize_ord"
+    imgs_dir = r"M:\0_School-108-2_M2B\paper11\DewarpNet\try_kong_see_size512_pad20_resize_ord"
+    
+
+    dst_dir  = f"{imgs_dir}/DewarpNet_run"
 
     Check_dir_exist_and_build(dst_dir)
-    args = kong_args(wc_model_path = "H:/0_School-108-2/paper11/DewarpNet/dewarpnet_public_models/unetnc_doc3d.pkl",
-                     bm_model_path = "H:/0_School-108-2/paper11/DewarpNet/dewarpnet_public_models/dnetccnl_doc3d.pkl",
+    args = kong_args(
+                     wc_model_path = r"M:\0_School-108-2_M2B\paper11\DewarpNet\dewarpnet_public_models\unetnc_doc3d.pkl",
+                     bm_model_path = r"M:\0_School-108-2_M2B\paper11\DewarpNet\dewarpnet_public_models\dnetccnl_doc3d.pkl",
+                     #  wc_model_path = "D:/0_School-108-2/paper11/DewarpNet/dewarpnet_public_models/unetnc_doc3d.pkl",
+                     #  bm_model_path = "D:/0_School-108-2/paper11/DewarpNet/dewarpnet_public_models/dnetccnl_doc3d.pkl",
                      img_path      = imgs_dir,
                      out_path      = dst_dir,
                      show          = False,
@@ -195,6 +226,8 @@ if __name__ == '__main__':
                      )
     if(args.kong_show):
         Check_dir_exist_and_build(dst_dir + "/dis_bm_rec")
+        Check_dir_exist_and_build(dst_dir + "/W_pred")
+
     for go_f, fname in enumerate(os.listdir(args.img_path)[:]):
         print("%03i" % go_f, end=" ")
         if '.jpg' in fname or '.JPG' in fname or '.png' in fname:
