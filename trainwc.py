@@ -146,6 +146,7 @@ def train(args):
                 show_wc_tnsboard(global_step, writer, images, labels, pred, 8, 'Train Inputs', 'Train WCs', 'Train Pred. WCs')
                 writer.add_scalar('WC: L1 Loss/train'  , avg_l1loss / (i + 1), global_step)
                 writer.add_scalar('WC: Grad Loss/train', avg_gloss / (i + 1), global_step)
+                # break  ### debug用
 
         train_mse = train_mse / len(trainloader)
         avg_l1loss = avg_l1loss / len(trainloader)
@@ -157,59 +158,62 @@ def train(args):
         lrate = get_lr(optimizer)
         write_log_file(experiment_name, train_losses, epoch + 1, lrate, 'Train')
 
-        model.eval()
-        val_loss = 0.0
-        val_mse = 0.0
-        val_bg = 0.0
-        val_fg = 0.0
-        val_gloss = 0.0
-        val_dloss = 0.0
-        for i_val, (images_val, labels_val) in tqdm(enumerate(valloader)):
-            with torch.no_grad():
-                images_val = Variable(images_val.cuda())
-                labels_val = Variable(labels_val.cuda())
+        # model.eval()
+        # val_loss = 0.0
+        # val_mse = 0.0
+        # val_bg = 0.0
+        # val_fg = 0.0
+        # val_gloss = 0.0
+        # val_dloss = 0.0
+        # for i_val, (images_val, labels_val) in enumerate(tqdm(valloader)):
+        #     with torch.no_grad():
+        #         images_val = Variable(images_val.cuda())
+        #         labels_val = Variable(labels_val.cuda())
 
-                outputs = model(images_val)
-                pred_val = htan(outputs)
-                g_loss = gloss(pred_val, labels_val).cpu()
-                pred_val = pred_val.cpu()
-                labels_val = labels_val.cpu()
-                loss = loss_fn(pred_val, labels_val)
-                val_loss += float(loss)
-                val_mse += float(MSE(pred_val, labels_val))
-                val_gloss += float(g_loss)
+        #         outputs = model(images_val)
+        #         pred_val = htan(outputs)
+        #         g_loss, _, _ = gloss(pred_val, labels_val)
+        #         # g_loss = gloss.cpu()
+        #         pred_val = pred_val.cpu()
+        #         labels_val = labels_val.cpu()
+        #         loss = loss_fn(pred_val, labels_val)
+        #         val_loss += float(loss)
+        #         val_mse += float(MSE(pred_val, labels_val))
+        #         val_gloss += float(g_loss)
 
-        if args.tboard:
-            show_wc_tnsboard(epoch + 1, writer, images_val, labels_val, pred, 8, 'Val Inputs', 'Val WCs', 'Val Pred. WCs')
-            writer.add_scalar('WC: L1 Loss/val', val_loss, epoch + 1)
-            writer.add_scalar('WC: Grad Loss/val', val_gloss, epoch + 1)
+        #         if(i_val + 1) % 5 == 0: break  ### 自己加的， 覺得不用看那麼多
 
-        val_loss = val_loss / len(valloader)
-        val_mse = val_mse / len(valloader)
-        val_gloss = val_gloss / len(valloader)
-        print("val loss at epoch {}:: {}".format(epoch + 1, val_loss))
-        print("val MSE: {}".format(val_mse))
+        # if args.tboard:
+        #     show_wc_tnsboard(epoch + 1, writer, images_val, labels_val, pred, 8, 'Val Inputs', 'Val WCs', 'Val Pred. WCs')
+        #     writer.add_scalar('WC: L1 Loss/val', val_loss, epoch + 1)
+        #     writer.add_scalar('WC: Grad Loss/val', val_gloss, epoch + 1)
 
-        val_losses = [val_loss, val_mse, val_gloss]
-        write_log_file(experiment_name, val_losses, epoch + 1, lrate, 'Val')
+        # val_loss = val_loss / len(valloader)
+        # val_mse = val_mse / len(valloader)
+        # val_gloss = val_gloss / len(valloader)
+        # print("val loss at epoch {}:: {}".format(epoch + 1, val_loss))
+        # print("val MSE: {}".format(val_mse))
+
+        # val_losses = [val_loss, val_mse, val_gloss]
+        # write_log_file(experiment_name, val_losses, epoch + 1, lrate, 'Val')
 
         # reduce learning rate
-        sched.step(val_mse)
+        # sched.step(val_mse)
 
-        if val_mse < best_val_mse:
-            best_val_mse = val_mse
-            state = {'epoch': epoch + 1,
-                     'model_state': model.state_dict(),
-                     'optimizer_state': optimizer.state_dict(), }
-            torch.save(state, args.logdir + "{}_{}_{}_{}_{}_best_model.pkl".format(
-                args.arch, epoch + 1, val_mse, train_mse, experiment_name))
+        # if val_mse < best_val_mse:
+        #     best_val_mse = val_mse
+        #     state = {'epoch': epoch + 1,
+        #              'model_state': model.state_dict(),
+        #              'optimizer_state': optimizer.state_dict(), }
+        #     torch.save(state, args.logdir + "{}_{}_{}_{}_{}_best_model.pkl".format(
+        #         args.arch, epoch + 1, val_mse, train_mse, experiment_name))
 
-        if (epoch + 1) % 10 == 0:
-            state = {'epoch': epoch + 1,
-                     'model_state': model.state_dict(),
-                     'optimizer_state': optimizer.state_dict(), }
-            torch.save(state, args.logdir + "{}_{}_{}_{}_{}_model.pkl".format(
-                args.arch, epoch + 1, val_mse, train_mse, experiment_name))
+        # if (epoch + 1) % 10 == 0:
+        #     state = {'epoch': epoch + 1,
+        #              'model_state': model.state_dict(),
+        #              'optimizer_state': optimizer.state_dict(), }
+        #     torch.save(state, args.logdir + "{}_{}_{}_{}_{}_model.pkl".format(
+        #         args.arch, epoch + 1, val_mse, train_mse, experiment_name))
 
 class kong_args():
     def __init__(self, arch="dnetccnl", data_path="", img_rows=256, img_cols=256, n_epoch= 100, batch_size=1, l_rate=1e-5, resume=None, logdir='./checkpoints-wc/', tboard=False,):
