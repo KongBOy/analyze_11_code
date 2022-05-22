@@ -211,13 +211,42 @@ def show_unwarp_tnsboard(global_step, writer, uwpred, uworg, grid_samples, gt_ta
 ### show_wc_tnsboard(global_step, writer, images, labels, pred,      8,     'Train Inputs', 'Train WCs', 'Train Pred. WCs')
 def show_wc_tnsboard(global_step, writer, images, labels, pred, grid_samples,    inp_tag,     gt_tag,        pred_tag):
     idxs = torch.LongTensor(random.sample( range(images.shape[0]), min(grid_samples, images.shape[0])))
-
+    # idxs = [0, 1, 2, 3, 4]
     ### IN_dis_img
     grid_inp = torchvision.utils.make_grid(images[idxs], normalize=True, scale_each=True)
     writer.add_image(inp_tag, grid_inp, global_step)
-    ### GT_WC
+
+    ### GT_Wzxy
+    Wzgt = labels[idxs, 0:1, :, :]
+    Wzgt = torchvision.utils.make_grid(Wzgt, normalize=True, scale_each=True)
+    writer.add_image("1 Wzgt", Wzgt, global_step)
+
+    Wxgt = labels[idxs, 1:2, :, :]
+    Wxgt = torchvision.utils.make_grid(Wxgt, normalize=True, scale_each=True)
+    writer.add_image("2 Wxgt", Wxgt, global_step)
+
+    Wygt = labels[idxs, 2:3, :, :]
+    Wygt = torchvision.utils.make_grid(Wygt, normalize=True, scale_each=True)
+    writer.add_image("3 Wygt", Wygt, global_step)
+
+    ### GT_WC 整個
     grid_lbl = torchvision.utils.make_grid(labels[idxs], normalize=True, scale_each=True)
     writer.add_image(gt_tag, grid_lbl, global_step)
-    ### Pred_WC
+
+    ##########################
+    ### Pred_Wzxy
+    Wz_pred = pred[idxs, 0:1, :, :]
+    Wz_pred = torchvision.utils.make_grid(Wz_pred, normalize=True, scale_each=True)
+    writer.add_image("1 Wz_pred", Wz_pred, global_step)
+
+    Wx_pred = pred[idxs, 1:2, :, :]
+    Wx_pred = torchvision.utils.make_grid(Wx_pred, normalize=True, scale_each=True)
+    writer.add_image("2 Wx_pred", Wx_pred, global_step)
+
+    Wy_pred = pred[idxs, 2:3, :, :]
+    Wy_pred = torchvision.utils.make_grid(Wy_pred, normalize=True, scale_each=True)
+    writer.add_image("3 Wy_pred", Wy_pred, global_step)
+
+    ### Pred_WC 整個
     grid_pred = torchvision.utils.make_grid(pred[idxs], normalize=True, scale_each=True)
     writer.add_image(pred_tag, grid_pred, global_step)
