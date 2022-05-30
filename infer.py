@@ -3,7 +3,7 @@
 ### https://drive.google.com/file/d/1muSsMigSQGIhpZG7vEsq_d-JK7vmnv8X/view?usp=sharing
 import sys
 sys.path.append(r"F:\kong_model2\kong_util")
-from matplot_fig_ax_util import check_fig_ax_init, img_scatter_visual
+from kong_util.matplot_fig_ax_util import check_fig_ax_init, img_scatter_visual
 from flow_bm_util import dis_bm_rec_visual, bm_arrow_visual
 from build_dataset_combine import Check_dir_exist_and_build
 from wc_util import wc_3d_plot
