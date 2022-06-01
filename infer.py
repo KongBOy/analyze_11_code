@@ -1,12 +1,31 @@
+#############################################################################################################################################################################################################
+#############################################################################################################################################################################################################
+### 把 kong_model2 加入 sys.path
+import os
+code_exe_path = os.path.realpath(__file__)                   ### 目前執行 step10_b.py 的 path
+code_exe_path_element = code_exe_path.split("\\")            ### 把 path 切分 等等 要找出 kong_model 在第幾層
+code_dir = "\\".join(code_exe_path_element[:-1])
+kong_layer = code_exe_path_element.index("kong_model2")      ### 找出 kong_model2 在第幾層
+kong_model2_dir = "\\".join(code_exe_path_element[:kong_layer + 1])  ### 定位出 kong_model2 的 dir
+import sys                                                   ### 把 kong_model2 加入 sys.path
+sys.path.append(kong_model2_dir)
+sys.path.append(kong_model2_dir + "/kong_util")
+# print(__file__.split("\\")[-1])
+# print("    code_exe_path:", code_exe_path)
+# print("    code_exe_path_element:", code_exe_path_element)
+# print("    code_dir:", code_dir)
+# print("    kong_layer:", kong_layer)
+# print("    kong_model2_dir:", kong_model2_dir)
+#############################################################################################################################################################################################################
+
 # test end to end benchmark data test
 ### 我自己分析畫出的流程圖 infer.py
 ### https://drive.google.com/file/d/1muSsMigSQGIhpZG7vEsq_d-JK7vmnv8X/view?usp=sharing
-import sys
-sys.path.append(r"F:\kong_model2\kong_util")
+
 from kong_util.matplot_fig_ax_util import check_fig_ax_init, img_scatter_visual
-from flow_bm_util import dis_bm_rec_visual, bm_arrow_visual
-from build_dataset_combine import Check_dir_exist_and_build
-from wc_util import wc_3d_plot
+from kong_util.flow_bm_util import dis_bm_rec_visual, bm_arrow_visual
+from kong_util.build_dataset_combine import Check_dir_exist_and_build
+from kong_util.wc_util import wc_3d_plot
 
 import os
 import torch
@@ -132,6 +151,10 @@ def test(args, img_path, fname):
     debug_dict["step3_1 imgorg"]     = imgorg
     debug_dict["step3_2 outputs_bm"] = outputs_bm.cpu().numpy().transpose(0, 2, 3, 1)[0]  # NCHW  -> NHWC -> HWC
     debug_dict["step3_end uwpred"]   = uwpred
+
+    from step08_b_use_G_generate_0_util import wc_save_as_knpy
+    wc_save_as_knpy(wc=debug_dict["step2_1 wc_outputs"], wc_type="Wzxy", dst_dir=args.out_path + "/W_pred_npy_and_knpy_p20", fname=fname, pad_size=20, first_resize=(448, 448), final_resize=(448, 448), by_the_way_fake_F=True, dis_img=imgorg[..., ::-1], dis_img_format=".png", zmin=-0.50429183, zmax=0.46694446, ymin=-1.2410645, ymax=1.2485291, xmin=-1.2387834, xmax=1.2280148)
+    # wc_save_as_knpy(wc=debug_dict["step2_1 wc_outputs"], wc_type="Wzxy", dst_dir=args.out_path + "/W_pred_npy_and_knpy_p60", fname=fname, pad_size=60, first_resize=(448, 448), final_resize=(448, 448), by_the_way_fake_F=True, dis_img=imgorg[..., ::-1], dis_img_format=".png", zmin=-0.50429183, zmax=0.46694446, ymin=-1.2410645, ymax=1.2485291, xmin=-1.2387834, xmax=1.2280148)
     ###############################################################
     ### matplot visual
     if args.show:
@@ -204,12 +227,12 @@ if __name__ == '__main__':
 
     # imgs_dir = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_and_paper_hw512_have_dtd_hdr_mix_bg/see/dis_imgs_try_DewarpNet"
     # dst_dir  = "X:/0 data_dir/datasets/type8_blender_os_book/blender_os_and_paper_hw512_have_dtd_hdr_mix_bg/see/dis_imgs_try_DewarpNet/DewarpNet_Result"
-    
+
 
     # imgs_dir = r"M:\0_School-108-2_M2B\paper11\DewarpNet\try_kong_see_size512_pad20_resize256"
     # imgs_dir = r"M:\0_School-108-2_M2B\paper11\DewarpNet\try_kong_see_size512_pad60_resize_ord"
-    imgs_dir = r"M:\0_School-108-2_M2B\paper11\DewarpNet\try_kong_see_size512_pad20_resize_ord"
-    
+    imgs_dir = r"F:\kong_model2\Prepare_dataset\DewarpNet_Crop_pad20_60"
+
 
     dst_dir  = f"{imgs_dir}/DewarpNet_run"
 
