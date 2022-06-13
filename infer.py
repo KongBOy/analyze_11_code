@@ -153,8 +153,8 @@ def test(args, img_path, fname):
     debug_dict["step3_end uwpred"]   = uwpred
 
     from step08_b_use_G_generate_0_util import wc_save_as_knpy
-    wc_save_as_knpy(wc=debug_dict["step2_1 wc_outputs"], wc_type="Wzxy", dst_dir=args.out_path + "/W_pred_npy_and_knpy_p20", fname=fname, pad_size=20, first_resize=(448, 448), final_resize=(448, 448), by_the_way_fake_F=True, dis_img=imgorg[..., ::-1], dis_img_format=".png", zmin=-0.50429183, zmax=0.46694446, ymin=-1.2410645, ymax=1.2485291, xmin=-1.2387834, xmax=1.2280148)
-    # wc_save_as_knpy(wc=debug_dict["step2_1 wc_outputs"], wc_type="Wzxy", dst_dir=args.out_path + "/W_pred_npy_and_knpy_p60", fname=fname, pad_size=60, first_resize=(448, 448), final_resize=(448, 448), by_the_way_fake_F=True, dis_img=imgorg[..., ::-1], dis_img_format=".png", zmin=-0.50429183, zmax=0.46694446, ymin=-1.2410645, ymax=1.2485291, xmin=-1.2387834, xmax=1.2280148)
+    wc_save_as_knpy(wc=debug_dict["step2_1 wc_outputs"], wc_type="Wzxy", dst_dir=args.out_path + "/W_pred_npy_and_knpy_p20", fname=fname, pad_size=20, first_resize=(448, 448), final_resize=(448, 448), by_the_way_fake_F=True, dis_img=imgorg, dis_img_format=".png", zmin=-0.50429183, zmax=0.46694446, ymin=-1.2410645, ymax=1.2485291, xmin=-1.2387834, xmax=1.2280148, rec_hope=uwpred, rec_hope_format=".png")
+    # wc_save_as_knpy(wc=debug_dict["step2_1 wc_outputs"], wc_type="Wzxy", dst_dir=args.out_path + "/W_pred_npy_and_knpy_p60", fname=fname, pad_size=60, first_resize=(448, 448), final_resize=(448, 448), by_the_way_fake_F=True, dis_img=imgorg[..., ::-1], dis_img_format=".png", zmin=-0.50429183, zmax=0.46694446, ymin=-1.2410645, ymax=1.2485291, xmin=-1.2387834, xmax=1.2280148, rec_hope=uwpred[..., ::-1], rec_hope_format=".png")
     ###############################################################
     ### matplot visual
     if args.show:
