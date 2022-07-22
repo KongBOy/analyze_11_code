@@ -99,8 +99,8 @@ if(__name__ == "__main__"):
     ssim_scores = []
     for go_i in range(1, 66):
         print("current id:", go_i)
-        rec_img1 = cv2.imread(f"{rec_dir}/%02i_1 copy.png" % go_i)
-        rec_img2 = cv2.imread(f"{rec_dir}/%02i_2 copy.png" % go_i)
+        rec_img1 = cv2.imread(f"{rec_dir}/%02i_1.png" % go_i)
+        rec_img2 = cv2.imread(f"{rec_dir}/%02i_2.png" % go_i)
         sca_img = cv2.imread(f"{sca_dir}/%i.png" % go_i)
         sca_h, sca_w = sca_img.shape[:2]
         rec_img1 = cv2.resize(rec_img1, (sca_w, sca_h))
